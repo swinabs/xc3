@@ -12,33 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-namespace      = "amirprojectxc3"
+namespace      = "example"
 env            = "dev"
 region         = "ap-southeast-2"
-account_id     = "192248234478"
+account_id     = "123456789012"
 vpc_cidr_block = "10.0.0.0/16"
 public_subnet_cidr_block = {
   "ap-southeast-2a" = "10.0.0.0/24"
   "ap-southeast-2b" = "10.0.1.0/24"
 }
 domain_name    = ""
-hosted_zone_id = ""
+hosted_zone_id = "Z053166920YP1STI0EK5X"
 
 private_subnet_cidr_block = {
   "ap-southeast-2a" = "10.0.100.0/24"
 }
 # private_subnet_cidr_block  = "10.0.100.0/24"
 allow_traffic              = ["0.0.0.0/0"] // Use your own network CIDR
-ses_email_address          = "104088013@student.swin.edu.au"
-creator_email              = "104088013@student.swin.edu.au"
-owner_email                = "104088013@student.swin.edu.au"
+ses_email_address          = "example@example.co"
+creator_email              = "example@example.co"
+owner_email                = "example@example.co"
 instance_type              = "t2.micro"
 total_account_cost_lambda  = "total_account_cost"
 total_account_cost_cronjob = "cron(0 0 1,15 * ? *)"     // flexible can be set according to need
 prometheus_layer           = "lambda_layers/python.zip" // s3 key for lambda layer
 memory_size                = 128
 timeout                    = 300
-project                    = "amirprojectxc3"
+project                    = "example"
 create_kms                 = false
 maximum_budget = 5.0
 threshold= 10
