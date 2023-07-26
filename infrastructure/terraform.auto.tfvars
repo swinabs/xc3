@@ -40,6 +40,12 @@ memory_size                = 128
 timeout                    = 300
 project                    = "amirprojectxc3"
 create_kms                 = false
+maximum_budget = 5.0
+threshold= 10
+cloudwatch_namespace = "CustomCostMetric"
+metric_name = "CostPercentageMetric"
+sender_email = "104088013@student.swin.edu.au"
+recipient_email = "maharjanamir.101@gmail.com"
 security_group_ingress = {
   "pushgateway" = {
     description = "PushGateway"
@@ -68,12 +74,5 @@ security_group_ingress = {
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["10.0.100.0/24"]
-  },
-  "maximum_budget" = 5.0
-  "threshold" = 10
-  "cloudwatch_namespace" = "CustomCostMetric"
-  "metric_name" = "CostPercentageMetric"
-  "sender_email" = "104088013@student.swin.edu.au"
-  "recipient_email" = "maharjanamir.101@gmail.com"
-
+  }
 }
