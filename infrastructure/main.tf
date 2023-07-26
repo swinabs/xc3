@@ -55,6 +55,9 @@ module "xc3" {
   grafana_api_gateway = module.serverless.grafana_api_gateway
   env                 = var.env
   depends_on          = [module.networking]
+  threshold           = var.threshold
+  cloudwatch_namespace = var.cloudwatch_namespace
+  metric_name         = var.metric_name
 }
 
 // Terraform Module for Serverless Application
@@ -79,5 +82,10 @@ module "serverless" {
   cron_jobs_schedule         = var.cron_jobs_schedule
   slack_channel_url          = var.slack_channel_url
   create_kms                 = var.create_kms
+  maximum_budget             = var.maximum_budget
+  cloudwatch_namespace       = var.cloudwatch_namespace
+  metric_name                = var.metric_name
+  sender_email               = var.sender_email
+  recipient_email            = var.recipient_email
 
 }

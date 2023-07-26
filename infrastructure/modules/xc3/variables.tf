@@ -96,3 +96,21 @@ variable "env" {
   description = "Env variable for Dev/Prod"
   type        = string
 }
+
+variable "threshold" {
+  description = "The threshold for the cost percentage (in percent)"
+  type        = number
+  default     = 10  # Set as 10 for test purpose
+}
+
+variable "cloudwatch_namespace" {
+  type        = string
+  description = "Namespace for the CloudWatch metric"
+  default     = "CustomCostMetric"
+}
+
+variable "metric_name" {
+  type        = string
+  description = "Name of the custom metric in CloudWatch"
+  default     = "CostPercentageMetric"
+}
