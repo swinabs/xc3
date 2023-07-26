@@ -35,3 +35,7 @@ output "xc3_url" {
   description = "DNS of the XC3 Dashboard"
   value       = var.env != "prod" ? aws_instance.this.public_ip : var.domain_name != "" ? var.domain_name : aws_lb.this[0].dns_name
 }
+
+output "alert_sns_topic_arn" {
+  value = aws_sns_topic.alarm_topic.arn
+}

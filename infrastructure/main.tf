@@ -58,6 +58,7 @@ module "xc3" {
   threshold           = var.threshold
   cloudwatch_namespace = var.cloudwatch_namespace
   metric_name         = var.metric_name
+  notifier_lambda_function_arn = module.serverless.notifier_lambda_function_arn
 }
 
 // Terraform Module for Serverless Application
@@ -87,5 +88,6 @@ module "serverless" {
   metric_name                = var.metric_name
   sender_email               = var.sender_email
   recipient_email            = var.recipient_email
+  alert_sns_topic_arn        = module.xc3.alert_sns_topic_arn
 
 }

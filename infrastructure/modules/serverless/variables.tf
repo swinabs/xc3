@@ -128,6 +128,13 @@ variable "create_kms" {
   type        = bool
 }
 
+variable "maximum_budget" {
+  description = "The maximum budget set by the user (in dollars)"
+  type        = number
+  default     = 1.0  # You can change the default value as needed
+}
+
+
 variable "cloudwatch_namespace" {
   type        = string
   description = "Namespace for the CloudWatch metric"
@@ -151,3 +158,8 @@ variable "recipient_email" {
   type        = string
   default     = "maharjanamir.101@gmail.com"
 }
+
+variable "alert_sns_topic_arn" {
+  description = "ARN of the Alert SNS topic from the xc3 module"
+}
+
