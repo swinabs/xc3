@@ -176,11 +176,11 @@ variable "metric_name" {
 variable "sender_email" {
   description = "Sender Email Address"
   type        = string
-  default     = "104088013@student.swin.edu.au"
+  default     = "swinabs@gmail.com"
 }
 
 variable "recipient_email" {
   description = "Recipient Email Address"
   type        = string
-  default     = "maharjanamir.101@gmail.com"
+  default     = "swinabs@gmail.com"
 }

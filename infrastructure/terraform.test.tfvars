@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-namespace      = "testing"
-region         = "eu-west-1"
+namespace      = "sanxc3"
+region         = "ap-southeast-2"
 account_id     = "123456789012"
 vpc_cidr_block = "15.0.0.0/16"
 public_subnet_cidr_block = {

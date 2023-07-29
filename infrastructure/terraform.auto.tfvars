@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-namespace      = "example"
+namespace      = "sanxc3"
 env            = "dev"
 region         = "ap-southeast-2"
-account_id     = "123456789012"
+account_id     = "192248234478"
 vpc_cidr_block = "10.0.0.0/16"
 public_subnet_cidr_block = {
   "ap-southeast-2a" = "10.0.0.0/24"
@@ -29,23 +29,23 @@ private_subnet_cidr_block = {
 }
 # private_subnet_cidr_block  = "10.0.100.0/24"
 allow_traffic              = ["0.0.0.0/0"] // Use your own network CIDR
-ses_email_address          = "example@example.co"
-creator_email              = "example@example.co"
-owner_email                = "example@example.co"
+ses_email_address          = "swinabs@gmail.com"
+creator_email              = "swinabs@gmail.com"
+owner_email                = "swinabs@gmail.com"
 instance_type              = "t2.micro"
 total_account_cost_lambda  = "total_account_cost"
 total_account_cost_cronjob = "cron(0 0 1,15 * ? *)"     // flexible can be set according to need
 prometheus_layer           = "lambda_layers/python.zip" // s3 key for lambda layer
 memory_size                = 128
 timeout                    = 300
-project                    = "example"
+project                    = "sanxc3"
 create_kms                 = false
 maximum_budget = 5.0
 threshold= 10
 cloudwatch_namespace = "CustomCostMetric"
 metric_name = "CostPercentageMetric"
-sender_email = "104088013@student.swin.edu.au"
-recipient_email = "maharjanamir.101@gmail.com"
+sender_email = "swinabs@gmail.com"
+recipient_email = "swinabs@gmail.com"
 security_group_ingress = {
   "pushgateway" = {
     description = "PushGateway"
