@@ -17,7 +17,7 @@ def lambda_handler(event, context):
     account_id = str(os.environ['ACCOUNT_ID'])
 
 
-    email_status = send_email(cost_percentage, maximum_budget, total_cost)
+    email_status = send_email(cost_percentage, maximum_budget, total_cost,account_id)
     slack_status = send_slack(cost_percentage, total_cost, maximum_budget)
 
 
@@ -36,7 +36,7 @@ def lambda_handler(event, context):
 
 
 
-def send_email(cost_percentage, maximum_budget, total_cost):
+def send_email(cost_percentage, maximum_budget, total_cost,account_id):
     SENDER = "swinabs@gmail.com"
     RECIPIENT = "swinabs@gmail.com"
     AWS_REGION = "ap-southeast-2"
