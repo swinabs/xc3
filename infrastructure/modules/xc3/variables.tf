@@ -114,6 +114,12 @@ variable "metric_name" {
   description = "Name of the custom metric in CloudWatch"
   default     = "CostPercentageMetric"
 }
+variable "account_id"{
+  type = string 
+  description = "Account Id"
+  default = "my account id"
+
+}
 
 variable "notifier_lambda_function_arn" {
   description = "ARN of the Lambda function from the serverless module"

@@ -150,13 +150,13 @@ variable "metric_name" {
 variable "sender_email" {
   description = "Sender Email Address"
   type        = string
-  default     = "104088013@student.swin.edu.au"
+  default     = "104053011@student.swin.edu.au"
 }
 
 variable "recipient_email" {
   description = "Recipient Email Address"
   type        = string
-  default     = "maharjanamir.101@gmail.com"
+  default     = "santoshs.pokhrel@gmail.com.com"
 }
 
 variable "alert_sns_topic_arn" {

@@ -39,6 +39,8 @@ def handler(event, context):
     # Publish the cost percentage as a custom metric to CloudWatch Metrics
     publish_to_cloudwatch(cost_percentage)
 
+    
+
     return {
         'statusCode': 200,
         'body': json.dumps('Cost data retrieved and pushed to CloudWatch Metrics')
