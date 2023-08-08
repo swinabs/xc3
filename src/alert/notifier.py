@@ -41,10 +41,8 @@ def send_email(cost_percentage, maximum_budget, total_cost):
     RECIPIENT = "swinabs@gmail.com"
     AWS_REGION = "ap-southeast-2"
     SUBJECT = "Cost Reminder"
-    
 
-
- BODY_TEXT = "Alarm Triggered"
+    BODY_TEXT = "Alarm Triggered"
     BODY_HTML = f""" 
         <html>
         <head>
@@ -154,10 +152,10 @@ def send_email(cost_percentage, maximum_budget, total_cost):
 
 def send_slack(cost_percentage, total_cost, maximum_budget):
     http = urllib3.PoolManager()
-    
+
     # slack_url = os.environ["slack_channel_url"]
-    slack_url =  "https://hooks.slack.com/services/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"
-    
+    slack_url =  ""
+
     message_text = f"Dear User,\n\n"
     message_text += f"Your AWS account cost has exceeded the threshold of {cost_percentage:.2f}%. Below is the cost breakdown:\n"
     message_text += f"---------------------------\n"
