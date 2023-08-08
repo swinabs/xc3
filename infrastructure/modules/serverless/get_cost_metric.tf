@@ -111,7 +111,7 @@ resource "aws_lambda_function" "cost_metric_lambda" {
 }
 
 resource "aws_cloudwatch_event_rule" "lambda_schedule" {
-  name                = "LambdaScheduleRule"
+  name                = "${var.namespace}-LambdaScheduleRule"
   description         = "Schedule Lambda to run every day"
   schedule_expression = "cron(0 0 * * ? *)"  # Run at 00:00 UTC every day
 }
