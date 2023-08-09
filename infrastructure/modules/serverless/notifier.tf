@@ -15,6 +15,7 @@ resource "aws_lambda_function" "notifier" {
 
   environment {
     variables = {
+      BUCKET = var.s3_xc3_bucket.bucket
       sender_email = var.sender_email
       recipient_email = var.recipient_email
       region = var.region
@@ -63,7 +64,8 @@ resource "aws_iam_policy" "notifier_custom_policy" {
     {
       "Effect": "Allow",
       "Action": [
-        "ses:SendEmail"
+        "ses:SendEmail",
+        "ce:GetCostAndUsage"
       ],
       "Resource": "*"
     }
@@ -92,3 +94,16 @@ resource "aws_lambda_permission" "lambda_sns_trigger_permission" {
   principal     = "sns.amazonaws.com"
   source_arn    = var.alert_sns_topic_arn
 }
+resource "aws_s3_object" "logo_upload" {
+  bucket  = var.s3_xc3_bucket.bucket
+  key     = "logo.png"
+  source  = "${path.module}/logo.png"
+  acl     = "private"
+}
+
+# Attach AmazonS3ReadOnlyAccess policy to the IAM Role
+resource "aws_iam_role_policy_attachment" "s3_readonly_policy_attachment"{
+  role = aws_iam_role.notifier_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+}
+

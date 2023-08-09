@@ -16,16 +16,16 @@
 
 # Variables values that will be used in init script to create resources for XC3 infrastructure
 env="dev"
-namespace="example"
-project="example"
+namespace="bimba-example"
+project="bimba-example"
 region="ap-southeast-2"
 allow_traffic="0.0.0.0/0"
 domain="" #  [Optional] - If you want to use your own domain then set this variable.
-account_id="123456789012"
+account_id="192248234478"
 hosted_zone_id="Z053166920YP1STI0EK5X"
-owner_email="example@example.co"
-creator_email="example@example.co"
-ses_email_address="example@example.co"
+owner_email="herosteelfixing@gmail.com"
+creator_email="herosteelfixing@gmail.com"
+ses_email_address="herosteelfixing@gmail.com"
 bucket_name="terraform-state-example"
 
 

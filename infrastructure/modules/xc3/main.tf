@@ -166,7 +166,7 @@ resource "aws_sns_topic" "this" {
 resource "aws_s3_bucket" "this" {
   #ts:skip=AWS.S3Bucket.IAM.High.0370
   bucket        = "${var.namespace}-metadata-storage"
-  force_destroy = false
+  force_destroy = true
   lifecycle {
     ignore_changes = all
   }

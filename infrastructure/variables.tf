@@ -135,7 +135,7 @@ variable "cron_jobs_schedule" {
 variable "slack_channel_url" {
   description = "Slack Channel URL"
   type        = string
-  default     = ""
+  default     = "https://hooks.slack.com/services/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"
 }
 
 variable "create_kms" {
@@ -176,11 +176,11 @@ variable "metric_name" {
 variable "sender_email" {
   description = "Sender Email Address"
   type        = string
-  default     = "104088013@student.swin.edu.au"
+  default     = "103133909@student.swin.edu.au"
 }
 
 variable "recipient_email" {
   description = "Recipient Email Address"
   type        = string
-  default     = "maharjanamir.101@gmail.com"
+  default     = "herosteelfixing@gmail.com"
 }
