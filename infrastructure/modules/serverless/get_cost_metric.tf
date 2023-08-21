@@ -33,7 +33,7 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
 # Define a custom IAM policy for Cost Explorer and CloudWatch access
 resource "aws_iam_policy" "custom_policy" {
   name        = "${var.namespace}-CustomCostExplorerCloudWatchPolicy"  # Name of the custom policy
-  description = "Custom policy for Cost Explorer and CloudWatch access"
+  description = "Custom policy for CloudWatch access"
 
   # Define the policy document allowing ce:GetCostAndUsage, cloudwatch:PutMetricAlarm, and cloudwatch:PutMetricData actions
   policy = jsonencode({
@@ -42,7 +42,6 @@ resource "aws_iam_policy" "custom_policy" {
       {
         Effect = "Allow"
         Action = [
-          "ce:GetCostAndUsage",
           "cloudwatch:PutMetricAlarm",
           "cloudwatch:PutMetricData"
         ]

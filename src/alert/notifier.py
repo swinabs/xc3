@@ -1,171 +1,141 @@
 import boto3
 import json
-from botocore.exceptions import ClientError
-import urllib3
 import os
+import urllib3
+
 
 def lambda_handler(event, context):
-    # Extract the message from the SNS event
-    sns_message = event['Records'][0]['Sns']['Message']
-    message_data = json.loads(sns_message)
+    # Extract the SNS message from the Lambda event
+    sns_message = json.loads(event['Records'][0]['Sns']['Message'])
 
-    # Extract the relevant values from the message
-    cost_percentage = message_data.get('cost_percentage', 0.0)
-    maximum_budget = message_data.get('maximum_budget', 0.0)
-    total_cost = message_data.get('total_cost', 0.0)
+    # Extract relevant details from the SNS message
+    alarm_name = sns_message['AlarmName']
+    alarm_description = sns_message['AlarmDescription']
+    aws_account_id = sns_message['AWSAccountId']
+    region = sns_message['Region']
+    threshold = sns_message['Trigger']['Threshold']
 
-    account_id = str(os.environ['ACCOUNT_ID'])
+    iam_user = alarm_name.split('-')[1]
 
+    # Compose the email subject and body
+    subject = f"CloudWatch Alarm Triggered: {alarm_name}"
+    body = (
+        f"<html>"
+        f"<head>"
+        f"<style>"
+        f"  body {{"
+        f"    font-family: Arial, sans-serif;"
+        f"    padding: 20px;"
+        f"    background-color: #E5E4D9;"
+        f"    border-radius: 5px;"
+        f"  }}"
+        f"  .container {{"
+        f"    background-color: #ffffff;"
+        f"    border-radius: 5px;"
+        f"    padding: 20px;"
+        f"    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
+        f"  }}"
+        f"  .property {{"
+        f"    margin-bottom: 10px;"
+        f"  }}"
+        f"  .message {{"
+        f"    padding: 10px;"
+        f"    margin-top: 20px;"
+        f"  }}"
+        f"  .logo img {{"
+        f"    max-width: 150px;"
+        f"    height: auto;"
+        f"  }}"
+        f"  .property table {{"
+        f"    width: 100%;"
+        f"    border-collapse: collapse;"
+        f"    border: 1px solid #ddd;"
+        f"  }}"
+        f"  .property th, .property td {{"
+        f"    padding: 8px;"
+        f"    text-align: left;"
+        f"    border-bottom: 1px solid #ddd;"
+        f"  }}"
+        f"</style>"
+        f"</head>"
+        f"<body>"
+        f"  <div class='container'>"
+        f"    <h5>Alarm Details</h5>"
+        f"    <h6>Dear User,</h6>"
+        f"    <p>Your AWS account cost has exceeded, and the {alarm_name} has triggered. Details are as follows:</p>"
+        f"    <table class='property'>"
+        f"      <tr><th><strong>Property</strong></th><th><strong>Value</strong></th></tr>"
+        f"      <tr><td>Alarm Name:</td><td>{alarm_name}</td></tr>"
+        f"      <tr><td>Alarm Description:</td><td>{alarm_description}</td></tr>"
+        f"      <tr><td>AWS Account ID:</td><td>{aws_account_id}</td></tr>"
+        f"      <tr><td>IAM User:</td><td>{iam_user}</td></tr>"
+        f"      <tr><td>Region:</td><td>{region}</td></tr>"
+        f"      <tr><td>Threshold from Trigger:</td><td>{threshold}</td></tr>"
+        f"    </table>"
+        f"  </div>"
+        f"  <div class='message'>"
+        f"    <p>Best regards,<br>XC3 Team</p>"
+        f"    <div class='logo'>"
+        f"      <img src='' alt='Your Logo'>"
+        f"    </div>"
+        f"    <p style='color:red;'><b>This is an automated mail. Please do not reply.</b></p>"
+        f"  </div>"
+        f"</body>"
+        f"</html>"
+    )
 
-    email_status = send_email(cost_percentage, maximum_budget, total_cost,account_id)
-    slack_status = send_slack(cost_percentage, total_cost, maximum_budget)
+    # Send the email
+    send_email(subject, body)
+    send_slack(alarm_name, alarm_description, aws_account_id, region, threshold, iam_user)
 
-
-
-    if email_status and slack_status:
-        response_msg = 'Email and Slack Notification sent successfully'
-        status_code = 200
-    else:
-        response_msg = 'Failed to send one or more notifications'
-        status_code = 500
-
-    return {
-        'statusCode': status_code,
-        'body': json.dumps(response_msg)
-    }
-
-
-
-def send_email(cost_percentage, maximum_budget, total_cost,account_id):
-    SENDER = "swinabs@gmail.com"
-    RECIPIENT = "swinabs@gmail.com"
-    AWS_REGION = "ap-southeast-2"
-    SUBJECT = "Cost Reminder"
-
-    BODY_TEXT = "Alarm Triggered"
-    BODY_HTML = f""" 
-        <html>
-        <head>
-            <style>
-                /* CSS styles... */
-                .container {{
-                    font-family: Arial, sans-serif;
-                    max-width: 600px;
-                    margin: 0 auto;
-                    padding: 20px;
-                    border: 1px solid #ccc;
-                }}
-                .header {{
-                    background-color: #f0f0f0;
-                    padding: 10px;
-                    text-align: center;
-                }}
-                .logo {{
-                    text-align: center;
-                }}
-                .logo img {{
-                    max-width: 200px;
-                    height: auto;
-                }}
-                .message {{
-                    margin-top: 20px;
-                }}
-                .message h2 {{
-                    color: red;
-                }}
-                .message p {{
-                    margin: 10px 0;
-                }}
-                
-            </style>
-        </head>
-        <body>
-    <div class="container">
-        <div class="header">
-            <h2>Your AWS Account Cost Alert</h2>
-        </div>
-        
-        <div class="message">
-            <p><b>Dear User,</b></p>
-            <p>Your AWS account with Id {account_id}  has exceeded the threshold of {cost_percentage:.2f}%. Below is the cost breakdown:</p>
-            <table style="border-collapse: collapse; width: 50%;">
-                <tr>
-                    <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Total Cost</td>
-                    <td style="border: 1px solid #dddddd; text-align: right; padding: 8px;">${total_cost:.2f}</td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Maximum Budget</td>
-                    <td style="border: 1px solid #dddddd; text-align: right; padding: 8px;">${maximum_budget:.2f}</td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Cost Percentage</td>
-                    <td style="border: 1px solid #dddddd; text-align: right; padding: 8px;">{cost_percentage:.2f}%</td>
-                </tr>
-            </table>
-        </div>
-        <div class="message">
-            <p style="color:red;"><b>This is an automated mail. Please do not reply.<b></p>
-            <p>Best regards,<br>XC3 Team</p>
-            <div class="logo">
-            <img src="" alt="Your Logo">
-        </div>
-        </div>
-    </div>
-</body>
-
-        </html>
-        """
-    CHARSET = "UTF-8"
+    return "Email and Slack notifications sent successfully"
 
 
+def send_email(subject, body):
+    # Configure the email sender
+    sender_email = "swinabs@gmail.com"
+    recipient_email = "swinabs@gmail.com"
+    aws_region = os.environ["region"]
 
-    client = boto3.client('ses', region_name=AWS_REGION)
+    # Create an AWS Simple Email Service (SES) client
+    ses = boto3.client('ses', region_name=aws_region)
 
-    try:
-        response = client.send_email(
-            Destination={
-                'ToAddresses': [RECIPIENT],
-            },
-            Message={
-                'Body': {
-                    'Html': {
-                        'Charset': CHARSET,
-                        'Data': BODY_HTML,
-                    },
-                    'Text': {
-                        'Charset': CHARSET,
-                        'Data': BODY_TEXT,
-                    },
-                },
-                'Subject': {
-                    'Charset': CHARSET,
-                    'Data': SUBJECT,
-                },
-            },
-            Source=SENDER,
-        )
-        print("Email sent! Message ID:", response['MessageId'])
-        return True
-    except ClientError as e:
-        print("Failed to send email:", e.response['Error']['Message'])
-        return False
+    # Send the email
+    response = ses.send_email(
+        Source=sender_email,
+        Destination={'ToAddresses': [recipient_email]},
+        Message={
+            'Subject': {'Data': subject},
+            'Body': {'Html': {'Data': body}}
+        }
+    )
 
-def send_slack(cost_percentage, total_cost, maximum_budget):
+    return response
+
+
+def send_slack(alarm_name, alarm_description, aws_account_id, region, threshold, iam_user):
     http = urllib3.PoolManager()
 
     # slack_url = os.environ["slack_channel_url"]
-    slack_url =  ""
+    slack_url = ""
 
     message_text = f"Dear User,\n\n"
-    message_text += f"Your AWS account cost has exceeded the threshold of {cost_percentage:.2f}%. Below is the cost breakdown:\n"
+    message_text += f"Your AWS account cost has exceeded, and the {alarm_name} has triggered. Details are as follows:\n"
     message_text += f"---------------------------\n"
-    message_text += f"Total Cost    : ${total_cost:.2f}\n"
+    message_text += f"Alarm Name     : {alarm_name}\n"
     message_text += f"---------------------------\n"
-    message_text += f"Maximum Budget: ${maximum_budget:.2f} \n"
+    message_text += f"Alarm Description: {alarm_description}\n"
     message_text += f"---------------------------\n"
-    message_text += f"Cost Percentage : {cost_percentage:.2f}% \n"
+    message_text += f"Account ID : {aws_account_id}\n"
     message_text += f"---------------------------\n"
-    message_text += f"Best Regards,\n XGrid Team"
+    message_text += f"Region : {region}\n"
+    message_text += f"---------------------------\n"
+    message_text += f"Threshold : {threshold}\n"
+    message_text += f"---------------------------\n"
+    message_text += f"IAM User : {iam_user}\n"
+    message_text += f"---------------------------\n"
+
+    message_text += f"Best Regards,\nXGrid Team"
 
     messages = {"text": message_text}
 

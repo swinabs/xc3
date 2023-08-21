@@ -19,7 +19,6 @@ resource "aws_lambda_function" "notifier" {
       recipient_email = var.recipient_email
       region = var.region
       slack_channel_url = var.slack_channel_url
-      ACCOUNT_ID = var.account_id
     }
   }
 }
