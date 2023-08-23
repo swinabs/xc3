@@ -211,6 +211,11 @@ resource "aws_lambda_layer_version" "lambda_layer_prometheus" {
   ]
 }
 
+locals {
+  resources_list = jsondecode(file("${path.module}/resource_based_cost.json"))
+  iam_users_list = jsondecode(file("${path.module}/iam_cost_dummy.json"))
+}
+
 # Create an SNS topic for alarm notifications
 resource "aws_sns_topic" "alarm_topic" {
   name = "${var.namespace}-cost-exceeds-threshold-topic"
@@ -227,7 +232,7 @@ resource "aws_sns_topic_subscription" "lambda_subscription" {
 /*
 */
 resource "aws_cloudwatch_metric_alarm" "cost_percentage_alarm" {
-  alarm_name          = "${var.namespace}-Cost Percentage Exceeds Threshold 8"
+  alarm_name          = "${var.namespace}-Total Cost Percentage Alarm"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
   metric_name         = var.metric_name
@@ -235,18 +240,9 @@ resource "aws_cloudwatch_metric_alarm" "cost_percentage_alarm" {
   period              = 86400  # 1 day (in seconds)
   statistic           = "Maximum"
   threshold           = var.threshold # Adjust the threshold value as needed
-  alarm_description   = "The cost percentage has exceeded the threshold"
+  alarm_description   = "The account cost percentage has exceeded the threshold"
   alarm_actions       = [aws_sns_topic.alarm_topic.arn]
 
-}
-
-data "aws_s3_object" "resources_data" {
-  bucket = aws_s3_bucket.this.id
-  key    = "cost-metrics/resource_based_cost.json"
-}
-
-locals {
-  resources_list = jsondecode(data.aws_s3_object.resources_data.body)
 }
 
 resource "aws_cloudwatch_metric_alarm" "resource_cost_percentage_alarm" {
@@ -260,18 +256,13 @@ resource "aws_cloudwatch_metric_alarm" "resource_cost_percentage_alarm" {
   period              = 86400  # 1 day (in seconds)
   statistic           = "Maximum"
   threshold           =  var.threshold
-  alarm_description   = "The cost percentage has exceeded the threshold"
+  alarm_description   = "Resource cost has exceeded the threshold"
   alarm_actions       = [aws_sns_topic.alarm_topic.arn]
-}
-
-data "aws_s3_object" "iam_cost_data" {
-  bucket = aws_s3_bucket.this.id
-  key    = "cost-metrics/iam_cost_dummy.json"
 }
 
 # Create a CloudWatch metric alarm for IAM user cost exceeded
 resource "aws_cloudwatch_metric_alarm" "iam_cost_exceeded_alarm" {
-  for_each = { for idx, item in jsondecode(data.aws_s3_object.iam_cost_data.body) : idx => item }
+  for_each = { for idx, item in local.iam_users_list : idx => item }
 
   alarm_name          = "${var.namespace}-IAMCost-${each.value.IAM}-ExceededAlarm"
   comparison_operator = "GreaterThanThreshold"

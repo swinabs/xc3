@@ -15,8 +15,6 @@ def lambda_handler(event, context):
     region = sns_message['Region']
     threshold = sns_message['Trigger']['Threshold']
 
-    iam_user = alarm_name.split('-')[1]
-
     # Compose the email subject and body
     subject = f"CloudWatch Alarm Triggered: {alarm_name}"
     body = (
@@ -60,24 +58,20 @@ def lambda_handler(event, context):
         f"</head>"
         f"<body>"
         f"  <div class='container'>"
-        f"    <h5>Alarm Details</h5>"
-        f"    <h6>Dear User,</h6>"
+        f"    <h4>Alarm Details</h4>"
+        f"    <p>Dear User,</p>"
         f"    <p>Your AWS account cost has exceeded, and the {alarm_name} has triggered. Details are as follows:</p>"
         f"    <table class='property'>"
         f"      <tr><th><strong>Property</strong></th><th><strong>Value</strong></th></tr>"
         f"      <tr><td>Alarm Name:</td><td>{alarm_name}</td></tr>"
         f"      <tr><td>Alarm Description:</td><td>{alarm_description}</td></tr>"
         f"      <tr><td>AWS Account ID:</td><td>{aws_account_id}</td></tr>"
-        f"      <tr><td>IAM User:</td><td>{iam_user}</td></tr>"
         f"      <tr><td>Region:</td><td>{region}</td></tr>"
         f"      <tr><td>Threshold from Trigger:</td><td>{threshold}</td></tr>"
         f"    </table>"
         f"  </div>"
         f"  <div class='message'>"
         f"    <p>Best regards,<br>XC3 Team</p>"
-        f"    <div class='logo'>"
-        f"      <img src='' alt='Your Logo'>"
-        f"    </div>"
         f"    <p style='color:red;'><b>This is an automated mail. Please do not reply.</b></p>"
         f"  </div>"
         f"</body>"
@@ -93,8 +87,8 @@ def lambda_handler(event, context):
 
 def send_email(subject, body):
     # Configure the email sender
-    sender_email = "swinabs@gmail.com"
-    recipient_email = "swinabs@gmail.com"
+    sender_email = os.environ["sender_email"]
+    recipient_email = os.environ["recipient_email"]
     aws_region = os.environ["region"]
 
     # Create an AWS Simple Email Service (SES) client
@@ -117,7 +111,7 @@ def send_slack(alarm_name, alarm_description, aws_account_id, region, threshold,
     http = urllib3.PoolManager()
 
     # slack_url = os.environ["slack_channel_url"]
-    slack_url = ""
+    #slack_url = "https://hooks.slack.com/services/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"
 
     message_text = f"Dear User,\n\n"
     message_text += f"Your AWS account cost has exceeded, and the {alarm_name} has triggered. Details are as follows:\n"
@@ -131,8 +125,6 @@ def send_slack(alarm_name, alarm_description, aws_account_id, region, threshold,
     message_text += f"Region : {region}\n"
     message_text += f"---------------------------\n"
     message_text += f"Threshold : {threshold}\n"
-    message_text += f"---------------------------\n"
-    message_text += f"IAM User : {iam_user}\n"
     message_text += f"---------------------------\n"
 
     message_text += f"Best Regards,\nXGrid Team"

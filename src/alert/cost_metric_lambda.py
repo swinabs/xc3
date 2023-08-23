@@ -12,6 +12,8 @@ def handler(event, context):
 
         handle_resource_cost()
 
+        handle_iam_user_cost()
+
         return {
             'statusCode': 200,
             'body': json.dumps('Cost data retrieved from S3 and pushed to CloudWatch Metrics')
