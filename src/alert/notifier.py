@@ -80,7 +80,7 @@ def lambda_handler(event, context):
 
     # Send the email
     send_email(subject, body)
-    send_slack(alarm_name, alarm_description, aws_account_id, region, threshold, iam_user)
+    send_slack(alarm_name, alarm_description, aws_account_id, region, threshold)
 
     return "Email and Slack notifications sent successfully"
 
@@ -107,11 +107,10 @@ def send_email(subject, body):
     return response
 
 
-def send_slack(alarm_name, alarm_description, aws_account_id, region, threshold, iam_user):
+def send_slack(alarm_name, alarm_description, aws_account_id, region, threshold):
     http = urllib3.PoolManager()
 
-    # slack_url = os.environ["slack_channel_url"]
-    #slack_url = "https://hooks.slack.com/services/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"
+    slack_url = os.environ["slack_channel_url"]
 
     message_text = f"Dear User,\n\n"
     message_text += f"Your AWS account cost has exceeded, and the {alarm_name} has triggered. Details are as follows:\n"
