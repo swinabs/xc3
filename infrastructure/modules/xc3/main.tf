@@ -248,7 +248,7 @@ resource "aws_cloudwatch_metric_alarm" "cost_percentage_alarm" {
 resource "aws_cloudwatch_metric_alarm" "resource_cost_percentage_alarm" {
   for_each = { for idx, item in local.resources_list : idx => item.Service }
 
-  alarm_name          = "${var.namespace}-${each.value}-ResourceCost PercentageAlarm"
+  alarm_name          = "${var.namespace}-${each.value}-ResourceCost Alarm"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
   metric_name         = each.value  # Use the Service attribute as the metric name
